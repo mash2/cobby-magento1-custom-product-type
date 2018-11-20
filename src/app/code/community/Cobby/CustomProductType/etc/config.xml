@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<config>
+    <modules>
+        <Cobby_CustomProductType>
+            <version>1.0.0</version>
+        </Cobby_CustomProductType>
+    </modules>
+    <global>
+        <models>
+            <cobby_customProductType>
+                <class>Cobby_CustomProductType_Model</class>
+            </cobby_customProductType>
+        </models>
+        <events>
+            <cobby_import_product_import_before>
+                <observers>
+                    <cobby_customProductType>
+                        <class>cobby_customProductType/observer</class>
+                        <method>importBefore</method>
+                    </cobby_customProductType>
+                </observers>
+            </cobby_import_product_import_before>
+            <cobby_catalog_product_export_after>
+                <observers>
+                    <cobby_customProductType>
+                        <class>cobby_customProductType/observer</class>
+                        <method>exportAfter</method>
+                    </cobby_customProductType>
+                </observers>
+            </cobby_catalog_product_export_after>
+        </events>
+    </global>
+</config>

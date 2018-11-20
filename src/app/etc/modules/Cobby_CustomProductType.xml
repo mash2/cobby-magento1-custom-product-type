@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Cobby_CustomProductType>
+            <active>true</active>
+            <codePool>community</codePool>
+            <depends>
+                <Mage_Api />
+            </depends>
+        </Cobby_CustomProductType>
+    </modules>
+</config>
