@@ -1,24 +1,81 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mash2
- * Date: 20.11.18
- * Time: 09:09
- */
+
+use Mash2_Cobby_Model_Import_Entity_Product as Product;
 
 class Cobby_CustomProductType_Model_Observer extends Mage_Core_Model_Abstract
 {
     const VIRTUAL = 'virtual';
     const SIMPLE = 'simple';
+    const PREFIX = 'vi';
 
     public function importBefore($observer)
     {
         $data = $observer->getTransport()->getData();
+        $result = array();
+        $entityIds = array();
+        $existingProducts = array();
+        $newProducts = array();
+
         $rows = $data['rows'];
-        $typeModels = $data['typeModels'];
-        $usedSkus = $data['usedSkus'];
+        $typeModels = $data['type_models'];
+        $usedSkus = $data['used_skus'];
 
+        foreach ($rows as $row) {
+            if (isset($row[Product::COL_ENTITY_ID])) {
+                $entityIds[] = $row[Product::COL_ENTITY_ID];
+                $existingProducts[] = $row;
+            } else {
+                $newProducts[] = $row;
+            }
+        }
 
+        if ($existingProducts) {
+            $collection = Mage::getModel('catalog/product')
+                ->getCollection()
+                ->addAttributeToFilter('entity_id', array('in' => $entityIds));
+
+            $productData = array();
+
+            foreach ($collection as $item) {
+                $productData[$item['entity_id']]['type_id'] = $item['type_id'];
+            }
+
+            foreach ($existingProducts as $index => $existingProduct) {
+                //this switches the import product type with the value from the backend
+                $productType = $productData[$existingProduct['_id']]['type_id'];
+                $existingProduct['_type'] = $productType;
+                $result['rows'][] = $existingProduct;
+                $typeModels[$index] = $productType;
+            }
+
+        }
+
+        if ($newProducts) {
+            foreach ($newProducts as $index => $newProduct) {
+                if (strpos($newProduct['sku'], self::PREFIX) !== false) {
+                    $newProduct['_type'] = self::VIRTUAL;
+                    $typeModels[$index] = self::VIRTUAL;
+                }
+
+                $result['rows'][] = $newProduct;
+                //$result['type_models'][$index] = $typeModel;
+            }
+        }
+
+//        foreach ($typeModels as $typeModel) {
+//            if (true) {
+//                $typeModel['product_type'] = self::VIRTUAL;
+//            }
+//
+//            $result['type_models'][] = $typeModel;
+//        }
+
+        $result['used_skus'] = $usedSkus;
+        $result['type_models'] = $typeModels;
+
+        $observer->getTransport()->setData($result);
+
+        return $this;
     }
 
     public function exportAfter($observer)
