@@ -76,3 +76,5 @@ extension for product type manipulation during import and export
 	"id": "id"
 }
 ```
+
+[Link to Postman collection](https://github.com/mash2/cobby-postman/blob/master/Magento1/customProductType%20m1.postman_collection.json)
