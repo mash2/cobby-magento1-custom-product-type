@@ -45,9 +45,11 @@ class Cobby_CustomProductType_Model_Observer extends Mage_Core_Model_Abstract
                 $productType = $productData[$existingProduct['_id']]['type_id'];
                 $existingProduct['_type'] = $productType;
                 $result['rows'][] = $existingProduct;
-                $typeModels[$index] = $productType;
-            }
 
+                if (!in_array($productType, $typeModels)) {
+                    $typeModels[] = $productType;
+                }
+            }
         }
 
         if ($newProducts) {
@@ -58,17 +60,8 @@ class Cobby_CustomProductType_Model_Observer extends Mage_Core_Model_Abstract
                 }
 
                 $result['rows'][] = $newProduct;
-                //$result['type_models'][$index] = $typeModel;
             }
         }
-
-//        foreach ($typeModels as $typeModel) {
-//            if (true) {
-//                $typeModel['product_type'] = self::VIRTUAL;
-//            }
-//
-//            $result['type_models'][] = $typeModel;
-//        }
 
         $result['used_skus'] = $usedSkus;
         $result['type_models'] = $typeModels;
