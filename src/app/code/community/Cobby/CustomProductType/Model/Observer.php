@@ -4,10 +4,6 @@ use Mash2_Cobby_Model_Import_Entity_Product as Product;
 
 class Cobby_CustomProductType_Model_Observer extends Mage_Core_Model_Abstract
 {
-    const VIRTUAL = 'virtual';
-    const SIMPLE = 'simple';
-    const PREFIX = 'vi';
-
     public function importBefore($observer)
     {
         $data = $observer->getTransport()->getData();
@@ -54,13 +50,19 @@ class Cobby_CustomProductType_Model_Observer extends Mage_Core_Model_Abstract
 
         if ($newProducts) {
             foreach ($newProducts as $index => $newProduct) {
-                if (strpos($newProduct['sku'], self::PREFIX) !== false) {
-                    $newProduct['_type'] = self::VIRTUAL;
-                    $typeModels[$index] = self::VIRTUAL;
+                //here you can define, which product type should be set depending for example on the sku prefix
+                //you can also use any other attribute and dependency
+                if (strpos($newProduct['sku'], 'foo') !== false) {
+                    $newProduct['_type'] = 'virtual';
+                }
+
+                if (!in_array('virtual', $typeModels)) {
+                    $typeModels[] = 'virtual';
                 }
 
                 $result['rows'][] = $newProduct;
             }
+
         }
 
         $result['used_skus'] = $usedSkus;
